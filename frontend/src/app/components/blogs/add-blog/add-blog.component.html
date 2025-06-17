@@ -1,0 +1,49 @@
+<div class="container mt-5" style="max-width: 600px;">
+  <h2 class="text-center mb-3" style="color: #f1356d;">Add a New Blog</h2>
+    <hr class="mb-4" style="width: 60%; margin: 0 auto;">
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="title" class="form-label">Blog Title</label>
+      <input
+        type="text"
+        id="title"
+        class="form-control"
+        [(ngModel)]="blog.title"
+        name="title"
+        placeholder="Enter title"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="content" class="form-label">Blog Content</label>
+      <textarea
+        id="content"
+        class="form-control"
+        rows="5"
+        [(ngModel)]="blog.content"
+        name="content"
+        placeholder="Enter blog content"
+        required
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="author" class="form-label">Author</label>
+      <input
+        type="text"
+        id="author"
+        class="form-control"
+        [(ngModel)]="blog.author"
+        name="author"
+        placeholder="Enter your name"
+        required
+      />
+    </div>
+
+    <p class="text-muted mb-3">Posting as: <strong>{{ blog.author }}</strong></p>
+
+    <button type="submit" class="btn btn-primary  w-100">Submit</button>
+  </form>
+</div>
