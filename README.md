@@ -146,8 +146,8 @@ Authorization: Bearer <your-token>
    ```json
    {
      "username": "akhilan",
-     "email": "akhilan11122001@gmail.com",
-     "password": "123456"
+     "email": "akhil@gmail.com",
+     "password": "abcdefgh"
    }
    ```
 
@@ -156,8 +156,8 @@ Authorization: Bearer <your-token>
    Body:
    ```json
    {
-     "email": "akhilan11122001@gmail.com",
-     "password": "123456"
+     "email": "akhil@gmail.com",
+     "password": "abcdefgh"
    }
    ```  
    → Returns a `token` and `user` object.
