@@ -2,7 +2,9 @@ const Blog = require('../model/blog');
 
 const getAllBlogs = async (req, res) => {
     try {
-        const blogs = await Blog.find({}).sort({ createdAt: -1 });
+        const blogs = await Blog.find({})
+            .sort({ createdAt: -1 })
+            .populate('author', 'username email');
         res.status(200).json(blogs);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -12,7 +14,7 @@ const getAllBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
     const id = req.params.id;
     try {
-        const blog = await Blog.findById(id);
+        const blog = await Blog.findById(id).populate('author', 'username email');
         if (!blog) {
             return res.status(404).json({ error: 'Blog not found' });
         }
@@ -23,10 +25,10 @@ const getBlogById = async (req, res) => {
 };
 
 const saveBlog = async (req, res) => { 
-    const { title, content, author } = req.body;
+    const { title, content } = req.body;
 
     try {
-        const newBlog = new Blog({ title, content, author });
+        const newBlog = new Blog({ title, content, author: req.user._id  });
         await newBlog.save();
 
         res.status(201).json({

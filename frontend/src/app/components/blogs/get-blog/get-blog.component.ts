@@ -12,6 +12,8 @@ export class GetBlogComponent implements OnInit {
   isEditing: boolean = false;
   editedBlog: any = {};
 
+  isAuthor = false;
+
   constructor(
     private blogService: BlogService,
     private route: ActivatedRoute,
@@ -25,6 +27,15 @@ export class GetBlogComponent implements OnInit {
         next: (res) => {
           this.blog = res;
           this.editedBlog = { ...res }; // make a copy for editing
+          // console.log(res)
+
+          // 👇 Compare userId in localStorage with blog.author._id
+          const currentUserId = localStorage.getItem('userId');
+          // console.log(currentUserId)
+          // console.log(res.author._id)
+
+          this.isAuthor = currentUserId === res.author._id;
+          // console.log(this.isAuthor)
         },
         error: (err) => console.error(err)
       });
