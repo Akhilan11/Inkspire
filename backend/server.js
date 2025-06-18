@@ -16,6 +16,9 @@ connectDB();
 // Routes
 const blogRoutes = require('./router/blogRouter');
 app.use('/api/posts', blogRoutes);
+const userRoutes = require('./router/userRouter');
+app.use('/api/auth', userRoutes);
+
 
 // Start server
 const PORT = process.env.PORT || 3000;

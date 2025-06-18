@@ -3,19 +3,15 @@ const router = express.Router()
 
 const { getAllBlogs,getBlogById,saveBlog,deleteBlog,updateBlog } = require('../controller/blogController')
 
-// Get all blogs
-router.get('/', getAllBlogs);
+const { protect } = require('../middleware/authMiddleware');
 
-// Get blog by ID
+// Public Routes
+router.get('/', getAllBlogs);
 router.get('/:id', getBlogById);
 
-// Create a new blog
-router.post('/', saveBlog);
-
-// Update a blog by ID
-router.put('/:id', updateBlog);
-
-// Delete a blog by ID
-router.delete('/:id', deleteBlog);
+// Protected Routes
+router.post('/', protect, saveBlog);
+router.put('/:id', protect, updateBlog);
+router.delete('/:id', protect, deleteBlog);
 
 module.exports = router;
