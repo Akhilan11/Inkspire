@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,10 @@ export class UserService {
 
   getToken() {
     return localStorage.getItem('token')
+  }
+
+  getProfile() : Observable<any>{
+    return this.http.get(`${this.authUrl}/user`);
   }
 
 }

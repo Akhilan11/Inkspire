@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BlogService {
-  
+
   private url: string = 'http://localhost:5000/api/posts';
 
   constructor(private http: HttpClient) {}
@@ -34,5 +34,10 @@ export class BlogService {
   // Delete a blog
   deleteBlog(id: string): Observable<any> {
     return this.http.delete(`${this.url}/${id}`);
+  }
+
+  // Get user blog
+  getMyBlogs() : Observable<any>{
+    return this.http.get<any[]>(this.url+'/myblogs');
   }
 }
