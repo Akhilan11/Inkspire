@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <div class="row align-items-center">
+
+    <!-- Left: Profile Icon -->
+    <div class="col-md-3 text-center">
+      <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+        <i class="bi bi-person-fill" style="font-size: 2.5rem; color: #f1356d;"></i>
+      </div>
+    </div>
+
+    <!-- Right: Profile Info -->
+    <div class="col-md-9 text-start">
+      <h3 class="text-primary">{{ user.username }}</h3>
+      <p class="text-muted">{{ user.email }}</p>
+      <hr class="w-50">
+    </div>
+
+  </div>
+</div>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary">My Blogs</h2>
+  <hr class="mb-4" />
+
+  <div *ngIf="myBlogs.length > 0; else noBlogs">
+    <div class="card mb-3" *ngFor="let blog of myBlogs">
+        <div class="card-body">
+        <h4 class="card-title text-danger">{{ blog.title }}</h4>
+        <p class="card-text">{{ blog.content }}</p>
+        <p class="text-muted mb-2">
+            <small>Created on {{ blog.createdAt | date:'medium' }}</small>
+        </p>
+
+        <!-- View More button -->
+        <button 
+            class="btn btn-outline-primary btn-sm" 
+            [routerLink]="['/blog', blog._id]">
+            View More
+        </button>
+        </div>
+    </div>
+    </div>
+
+    <ng-template #noBlogs>
+    <p class="text-center mt-5 text-muted">You haven't posted any blogs yet.</p>
+    </ng-template>
+
+</div>
