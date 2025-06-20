@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const { getAllBlogs,getBlogById,saveBlog,deleteBlog,updateBlog } = require('../controller/blogController')
+const { getAllBlogs,getBlogById,saveBlog,deleteBlog,updateBlog, getBlogsByUser } = require('../controller/blogController')
 
 const { protect } = require('../middleware/authMiddleware');
 
 // Public Routes
 router.get('/', getAllBlogs);
+router.get('/myblogs', protect, getBlogsByUser);
 router.get('/:id', getBlogById);
 
 // Protected Routes

@@ -78,4 +78,18 @@ const updateBlog = async (req, res) => {
     }
 };
 
-module.exports = { getAllBlogs,getBlogById,saveBlog,deleteBlog,updateBlog }
+const getBlogsByUser = async (req, res) => {
+    
+    try {
+        const blogs = await Blog.find({ author: req.user._id })
+            .sort({ createdAt: -1 })
+            .populate('author', 'username email');
+        // console.log(blogs)
+        res.status(200).json(blogs);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+
+module.exports = { getAllBlogs,getBlogById,saveBlog,deleteBlog,updateBlog, getBlogsByUser }
