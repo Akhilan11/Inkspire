@@ -7,24 +7,55 @@
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
 Inkspire/
 │
 ├── backend/
 │   ├── controllers/
+│   │   ├── authController.js
+│   │   └── blogController.js
 │   ├── models/
+│   │   ├── blog.js
+│   │   └── user.js
 │   ├── routes/
+│   │   ├── authRouter.js
+│   │   └── blogRouter.js
 │   ├── middleware/
-│   └── config/
+│   │   └── authMiddleware.js
+│   ├── config/
+│   │   └── db.js
+│   ├── .env
+│   └── server.js
 │
 └── frontend/
     └── src/
         ├── app/
         │   ├── components/
+        │   │   ├── blog/
+        │   │   │   ├── blog-create/
+        │   │   │   ├── blog-edit/
+        │   │   │   ├── blog-list/
+        │   │   │   ├── blog-detail/
+        │   │   │   └── user-blogs/
+        │   │   ├── auth/
+        │   │   │   ├── login/
+        │   │   │   └── register/
+        │   │   └── shared/
+        │   │       └── navbar/
         │   ├── services/
-        │   └── interceptors/
+        │   │   ├── blog.service.ts
+        │   │   └── auth/
+        │   │       └── user.service.ts
+        │   ├── interceptors/
+        │   │   └── auth.interceptor.ts
+        │   ├── guards/
+        │   │   └── auth.guard.ts
+        │   ├── app-routing.module.ts
+        │   └── app.module.ts
+        └── assets/
+            └── icons/
 ```
 
 ---
@@ -32,24 +63,25 @@ Inkspire/
 ## 🚀 Features
 
 ### ✅ User Authentication
-- Register and Login with email & password
-- Passwords are hashed using `bcrypt`
-- JWT token is generated and stored in `localStorage`
-- Protected routes (create/update/delete blogs) using token
+- Register/Login with email & password
+- Passwords hashed via `bcrypt`
+- JWT token generated and stored in `localStorage`
+- Token auto-attached via Angular **interceptor**
+- Protected routes secured both in frontend & backend
 
 ### ✅ Blog System
-- View all blogs (public)
-- View single blog
-- Create blog (only logged-in users)
-- Update/delete blog (only by the blog's author)
-- Author name linked to registered user (via Mongoose `populate`)
-- Sorted by newest first
+- Public blog listing
+- Blog detail view with author info
+- Authenticated users can:
+  - Create new blogs
+  - Edit/Delete **only their own blogs**
+- Backend verifies authorship before allowing updates/deletes
+- Blogs sorted by newest first
 
-### ✅ Frontend UI
-- Responsive UI using **Bootstrap 5**
-- Angular Forms for create/edit blog
-- Navigation bar with login/logout toggle
-- Blog card list, detail view, and form pages styled
+### ✅ User Profile
+- `/profile` route shows:
+  - Logged-in user's name and email
+  - All blogs written by them
 
 ---
 
@@ -70,7 +102,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 ```
 
-3. Start the server:
+3. Start server:
 
 ```bash
 nodemon server.js
@@ -87,36 +119,10 @@ cd frontend
 npm install
 ```
 
-2. Start the app:
+2. Run the app:
 
 ```bash
 ng serve
-```
-
----
-
-## 🔐 Routes Overview
-
-### ✅ Public Routes (No Auth)
-| Method | Endpoint          | Description        |
-|--------|-------------------|--------------------|
-| GET    | `/api/posts`      | Get all blogs      |
-| GET    | `/api/posts/:id`  | Get single blog    |
-| POST   | `/api/auth/login` | User login         |
-| POST   | `/api/auth/register` | User registration |
-
----
-
-### 🔒 Protected Routes (Requires JWT Token)
-| Method | Endpoint         | Description         |
-|--------|------------------|---------------------|
-| POST   | `/api/posts`     | Create blog         |
-| PUT    | `/api/posts/:id` | Update blog         |
-| DELETE | `/api/posts/:id`| Delete blog         |
-
-Token must be sent as:
-```
-Authorization: Bearer <your-token>
 ```
 
 ---
@@ -126,72 +132,124 @@ Authorization: Bearer <your-token>
 ### Backend
 - Node.js
 - Express.js
-- MongoDB (Mongoose)
-- JSON Web Tokens (JWT)
-- bcrypt
+- MongoDB + Mongoose
+- JWT + bcrypt
+- dotenv
 
 ### Frontend
 - Angular 17
-- Angular Router
-- Angular Interceptors (for auth header)
 - Bootstrap 5
+- Angular Router
+- Angular Interceptor
+- Angular Reactive Forms
+
+---
+
+## 🔐 Routes Overview
+
+### ✅ Public
+| Method | Endpoint             | Description              |
+|--------|----------------------|--------------------------|
+| POST   | `/api/auth/register` | Register user            |
+| POST   | `/api/auth/login`    | Login user               |
+| GET    | `/api/posts`         | Get all blogs            |
+| GET    | `/api/posts/:id`     | Get a single blog        |
+
+### 🔒 Auth-Protected
+| Method | Endpoint              | Description                |
+|--------|-----------------------|----------------------------|
+| POST   | `/api/posts`          | Create blog (auth only)    |
+| PUT    | `/api/posts/:id`      | Update blog (author only)  |
+| DELETE | `/api/posts/:id`      | Delete blog (author only)  |
+| GET    | `/api/posts/myblogs`  | Get blogs by logged-in user|
+| GET    | `/api/auth/me`        | Get logged-in user details |
+
+**Auth Header Format**:
+```
+Authorization: Bearer <JWT Token>
+```
 
 ---
 
 ## ✅ How to Test in Postman
 
-1. **Register a user**  
-   `POST /api/auth/register`  
-   Body:
-   ```json
-   {
-     "username": "akhilan",
-     "email": "akhil@gmail.com",
-     "password": "abcdefgh"
-   }
-   ```
+### 1. Register
+```http
+POST /api/auth/register
+```
+```json
+{
+  "username": "akhilan",
+  "email": "akhil@gmail.com",
+  "password": "abcdefgh"
+}
+```
 
-2. **Login**  
-   `POST /api/auth/login`  
-   Body:
-   ```json
-   {
-     "email": "akhil@gmail.com",
-     "password": "abcdefgh"
-   }
-   ```  
-   → Returns a `token` and `user` object.
+### 2. Login
+```http
+POST /api/auth/login
+```
+```json
+{
+  "email": "akhil@gmail.com",
+  "password": "abcdefgh"
+}
+```
 
-3. **Create Blog**  
-   `POST /api/posts`  
-   Headers:
-   ```
-   Authorization: Bearer <token>
-   ```
-   Body:
-   ```json
-   {
-     "title": "How I Started Inkspire",
-     "content": "This blog explains how the idea of Inkspire was born..."
-   }
-   ```
+Response:
+```json
+{
+  "token": "<JWT Token>",
+  "user": {
+    "id": "...",
+    "username": "akhilan",
+    "email": "akhil@gmail.com"
+  }
+}
+```
+
+### 3. Create Blog
+```http
+POST /api/posts
+```
+Headers:
+```
+Authorization: Bearer <token>
+```
+Body:
+```json
+{
+  "title": "How I Started Inkspire",
+  "content": "This blog explains how the idea of Inkspire was born..."
+}
+```
+
+---
+
+## 🔒 Access Control Summary
+
+- Frontend:
+  - Shows Edit/Delete buttons only if `localStorage.userId === blog.author._id`
+- Backend:
+  - Validates ownership before allowing update/delete
 
 ---
 
-## 🔒 Auth & Access Control Summary
+## ✨ What's Next?
 
-- **Only blog authors** can edit or delete their own blogs.
-- Frontend UI conditionally shows Edit/Delete based on `localStorage.userId === blog.author._id`
-- Backend also validates this match before allowing update/delete
+Here are possible next features:
 
----
+### 💬 Chat Integration (like Facebook Messenger)
+- One-on-one messaging (not real-time comments)
+- Socket.IO-based
+- Chatbox attached to profile section
 
-## ✨ To Do (Future Enhancements)
+### 🧑 Profile Enhancements
+- Profile picture upload
+- User bio, join date, etc.
 
-- Add comments on blogs
-- Add profile pages for authors
-- Add categories or tags
-- Image upload support
-- Pagination or infinite scroll
-
----
+### 📦 Extra Features
+- Blog image support (Cloudinary/S3)
+- Tags/categories
+- Like & share buttons
+- Follow authors
