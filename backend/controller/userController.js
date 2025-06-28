@@ -51,4 +51,14 @@ const getProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, getProfile };
+// Get all users (for chat feature)
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('_id username email');
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getProfile,getAllUsers };
