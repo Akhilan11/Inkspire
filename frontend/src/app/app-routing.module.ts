@@ -10,12 +10,16 @@ import { UserBlogComponent } from './components/blogs/user-blog/user-blog.compon
 // auth
 import { LoginComponent } from './components/auth/login/login.component';
 
+// chat
+import { ChatComponent } from './components/chat/chat.component';
+
 const routes: Routes = [
   { path: '', component: AllBlogsComponent }, 
   { path: 'blog/create', component: AddBlogComponent },
   { path: 'blog/:id', component: GetBlogComponent }, 
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: UserBlogComponent },
+  { path: 'chat', component: ChatComponent }
 ];
 
 @NgModule({
