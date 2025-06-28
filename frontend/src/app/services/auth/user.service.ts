@@ -37,4 +37,8 @@ export class UserService {
     return this.http.get(`${this.authUrl}/user`);
   }
 
+  getAllUsers() {
+    return this.http.get<any[]>('http://localhost:5000/api/auth/users');
+  }
+
 }
