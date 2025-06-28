@@ -18,22 +18,22 @@ Inkspire/
 │   ├── controllers/
 │   │   ├── authController.js
 │   │   ├── blogController.js
-│   │   └── messageController.js          # 💬 NEW
+│   │   └── messageController.js          
 │   ├── models/
 │   │   ├── blog.js
 │   │   ├── user.js
-│   │   └── message.js                    # 💬 NEW
+│   │   └── message.js                    
 │   ├── routes/
 │   │   ├── authRouter.js
 │   │   ├── blogRouter.js
-│   │   └── messageRouter.js             # 💬 NEW
+│   │   └── messageRouter.js             
 │   ├── middleware/
 │   │   └── authMiddleware.js
 │   ├── config/
 │   │   ├── db.js
-│   │   └── socket.js                    # 💬 NEW
+│   │   └── socket.js                    
 │   ├── .env
-│   └── server.js                        # 📌 Updated to support WebSocket
+│   └── server.js                        
 │
 └── frontend/
     └── src/
@@ -42,15 +42,11 @@ Inkspire/
         │   │   ├── blog/
         │   │   ├── auth/
         │   │   ├── shared/
-        │   │   └── chat/                # 💬 NEW ChatComponent
-        │   │       ├── chat.component.ts
-        │   │       ├── chat.component.html
-        │   │       └── chat.component.css
+        │   │   └── chat/                 
         │   ├── services/
         │   │   ├── blog.service.ts
         │   │   ├── auth/
-        │   │   └── chat/                # 💬 NEW ChatService
-        │   │       └── chat.service.ts
+        │   │   └── chat/              
         │   ├── interceptors/
         │   └── guards/
         ├── environments/
