@@ -1,9 +1,11 @@
 # 🖋️ Inkspire
 
-**Inkspire** is a full-stack blogging platform where users can register, log in, and create, edit, view, and delete blogs. Built with:
+**Inkspire** is a full-stack blogging platform where users can register, log in, and create, edit, view, and delete blogs — and now, also chat in real-time with other users!
 
-- **Backend**: Node.js + Express + MongoDB + JWT Authentication  
-- **Frontend**: Angular 17 + Bootstrap 5
+Built with:
+
+- **Backend**: Node.js + Express + MongoDB + JWT Authentication + Socket.IO  
+- **Frontend**: Angular 17 + Bootstrap 5 + Socket.IO Client
 
 ---
 
@@ -15,47 +17,44 @@ Inkspire/
 ├── backend/
 │   ├── controllers/
 │   │   ├── authController.js
-│   │   └── blogController.js
+│   │   ├── blogController.js
+│   │   └── messageController.js          # 💬 NEW
 │   ├── models/
 │   │   ├── blog.js
-│   │   └── user.js
+│   │   ├── user.js
+│   │   └── message.js                    # 💬 NEW
 │   ├── routes/
 │   │   ├── authRouter.js
-│   │   └── blogRouter.js
+│   │   ├── blogRouter.js
+│   │   └── messageRouter.js             # 💬 NEW
 │   ├── middleware/
 │   │   └── authMiddleware.js
 │   ├── config/
-│   │   └── db.js
+│   │   ├── db.js
+│   │   └── socket.js                    # 💬 NEW
 │   ├── .env
-│   └── server.js
+│   └── server.js                        # 📌 Updated to support WebSocket
 │
 └── frontend/
     └── src/
         ├── app/
         │   ├── components/
         │   │   ├── blog/
-        │   │   │   ├── blog-create/
-        │   │   │   ├── blog-edit/
-        │   │   │   ├── blog-list/
-        │   │   │   ├── blog-detail/
-        │   │   │   └── user-blogs/
         │   │   ├── auth/
-        │   │   │   ├── login/
-        │   │   │   └── register/
-        │   │   └── shared/
-        │   │       └── navbar/
+        │   │   ├── shared/
+        │   │   └── chat/                # 💬 NEW ChatComponent
+        │   │       ├── chat.component.ts
+        │   │       ├── chat.component.html
+        │   │       └── chat.component.css
         │   ├── services/
         │   │   ├── blog.service.ts
-        │   │   └── auth/
-        │   │       └── user.service.ts
+        │   │   ├── auth/
+        │   │   └── chat/                # 💬 NEW ChatService
+        │   │       └── chat.service.ts
         │   ├── interceptors/
-        │   │   └── auth.interceptor.ts
-        │   ├── guards/
-        │   │   └── auth.guard.ts
-        │   ├── app-routing.module.ts
-        │   └── app.module.ts
+        │   └── guards/
+        ├── environments/
         └── assets/
-            └── icons/
 ```
 
 ---
@@ -63,39 +62,41 @@ Inkspire/
 ## 🚀 Features
 
 ### ✅ User Authentication
-- Register/Login with email & password
-- Passwords hashed via `bcrypt`
-- JWT token generated and stored in `localStorage`
-- Token auto-attached via Angular **interceptor**
-- Protected routes secured both in frontend & backend
+- Register & login with email/password
+- JWT-based session management
+- Secure protected routes in frontend/backend
 
-### ✅ Blog System
-- Public blog listing
-- Blog detail view with author info
-- Authenticated users can:
-  - Create new blogs
-  - Edit/Delete **only their own blogs**
-- Backend verifies authorship before allowing updates/deletes
-- Blogs sorted by newest first
+### ✅ Blogging System
+- Create, view, edit, and delete blogs
+- Each blog linked to a registered user
+- Public access to read blogs
+- Authenticated access to manage own content
 
-### ✅ User Profile
-- `/profile` route shows:
-  - Logged-in user's name and email
-  - All blogs written by them
+### ✅ Profile Page
+- `/profile` shows logged-in user's blogs
+- Includes email, username, and authored posts
+
+---
+
+## 💬 Real-Time Chat (NEW)
+
+- One-on-one **private messaging**
+- Real-time updates using **Socket.IO**
+- **MongoDB persistence** of chat messages
+- Previous chat history loads when chatting resumes
+- Sidebar shows **active online users**
 
 ---
 
 ## ⚙️ Backend Setup
 
 1. Install dependencies:
-
 ```bash
 cd backend
 npm install
 ```
 
 2. Create `.env` file:
-
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
@@ -103,9 +104,8 @@ JWT_SECRET=your_jwt_secret_key
 ```
 
 3. Start server:
-
 ```bash
-nodemon server.js
+node server.js
 ```
 
 ---
@@ -113,67 +113,57 @@ nodemon server.js
 ## ⚙️ Frontend Setup
 
 1. Install dependencies:
-
 ```bash
 cd frontend
 npm install
 ```
 
-2. Run the app:
-
+2. Start Angular app:
 ```bash
 ng serve
 ```
 
 ---
 
-## 🧠 Tech Stack
+## 🔌 API Routes Overview
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB + Mongoose
-- JWT + bcrypt
-- dotenv
+### 🧑 Auth (Public)
+| Method | Endpoint             | Description            |
+|--------|----------------------|------------------------|
+| POST   | `/api/auth/register` | Register new user      |
+| POST   | `/api/auth/login`    | Login user             |
+| GET    | `/api/auth/me`       | Get logged-in user     |
 
-### Frontend
-- Angular 17
-- Bootstrap 5
-- Angular Router
-- Angular Interceptor
-- Angular Reactive Forms
+### 📖 Blog (Public + Auth)
+| Method | Endpoint               | Description                    |
+|--------|------------------------|--------------------------------|
+| GET    | `/api/posts`           | Get all blogs                  |
+| GET    | `/api/posts/:id`       | Get single blog                |
+| POST   | `/api/posts`           | Create blog (auth required)    |
+| PUT    | `/api/posts/:id`       | Update blog (author only)      |
+| DELETE | `/api/posts/:id`       | Delete blog (author only)      |
+| GET    | `/api/posts/myblogs`   | Get blogs by logged-in user    |
 
----
-
-## 🔐 Routes Overview
-
-### ✅ Public
-| Method | Endpoint             | Description              |
-|--------|----------------------|--------------------------|
-| POST   | `/api/auth/register` | Register user            |
-| POST   | `/api/auth/login`    | Login user               |
-| GET    | `/api/posts`         | Get all blogs            |
-| GET    | `/api/posts/:id`     | Get a single blog        |
-
-### 🔒 Auth-Protected
-| Method | Endpoint              | Description                |
-|--------|-----------------------|----------------------------|
-| POST   | `/api/posts`          | Create blog (auth only)    |
-| PUT    | `/api/posts/:id`      | Update blog (author only)  |
-| DELETE | `/api/posts/:id`      | Delete blog (author only)  |
-| GET    | `/api/posts/myblogs`  | Get blogs by logged-in user|
-| GET    | `/api/auth/me`        | Get logged-in user details |
-
-**Auth Header Format**:
-```
-Authorization: Bearer <JWT Token>
-```
+### 💬 Chat (New)
+| Method | Endpoint                                      | Description                    |
+|--------|-----------------------------------------------|--------------------------------|
+| POST   | `/api/messages`                               | Save a message                 |
+| GET    | `/api/messages/:senderId/:receiverId`         | Get chat history between users |
 
 ---
 
-## ✅ How to Test in Postman
+## 🔐 Authentication Summary
 
-### 1. Register
+- JWT token stored in `localStorage`
+- Automatically added to requests via Angular interceptor
+- Only blog **authors** can update/delete
+- Only logged-in users can **send messages**
+
+---
+
+## 🧪 Postman Example
+
+### Register
 ```http
 POST /api/auth/register
 ```
@@ -185,7 +175,7 @@ POST /api/auth/register
 }
 ```
 
-### 2. Login
+### Login
 ```http
 POST /api/auth/login
 ```
@@ -196,60 +186,84 @@ POST /api/auth/login
 }
 ```
 
-Response:
-```json
-{
-  "token": "<JWT Token>",
-  "user": {
-    "id": "...",
-    "username": "akhilan",
-    "email": "akhil@gmail.com"
-  }
-}
-```
-
-### 3. Create Blog
+### Save a Message
 ```http
-POST /api/posts
-```
-Headers:
-```
+POST /api/messages
 Authorization: Bearer <token>
 ```
-Body:
 ```json
 {
-  "title": "How I Started Inkspire",
-  "content": "This blog explains how the idea of Inkspire was born..."
+  "sender": "userId1",
+  "receiver": "userId2",
+  "message": "Hey! How are you?"
 }
+```
+
+### Get Chat History
+```http
+GET /api/messages/userId1/userId2
+Authorization: Bearer <token>
 ```
 
 ---
 
-## 🔒 Access Control Summary
+## 🧠 Tech Stack
 
-- Frontend:
-  - Shows Edit/Delete buttons only if `localStorage.userId === blog.author._id`
-- Backend:
-  - Validates ownership before allowing update/delete
+### Backend
+- Node.js, Express.js
+- MongoDB (Mongoose)
+- JWT, bcrypt, dotenv
+- Socket.IO (chat)
+
+### Frontend
+- Angular 17
+- Bootstrap 5
+- Angular Router
+- Angular Interceptor
+- Socket.IO client
 
 ---
 
-## ✨ What's Next?
+## 🧾 How Real-Time Chat Works
 
-Here are possible next features:
+1. User logs in → joins Socket.IO server with username
+2. Active users list updates in real time
+3. On selecting a user:
+   - Fetches previous chat history via API
+   - Opens chat window
+4. Sends message → emits `private message` event via socket
+5. Message is saved to DB via REST POST as well
 
-### 💬 Chat Integration (like Facebook Messenger)
-- One-on-one messaging (not real-time comments)
-- Socket.IO-based
-- Chatbox attached to profile section
+---
 
-### 🧑 Profile Enhancements
-- Profile picture upload
-- User bio, join date, etc.
+## 📌 Notes
 
-### 📦 Extra Features
-- Blog image support (Cloudinary/S3)
-- Tags/categories
-- Like & share buttons
-- Follow authors
+- Chat only works between logged-in users
+- Message history is preserved between sessions
+- Socket.IO handles active user syncing and delivery
+- Future support for **group chat** or **notifications** possible
+
+---
+
+## ✅ What's Next?
+
+- 🖼 Image upload for blogs & profile
+- 📍 Tags and blog filtering
+- 💬 Blog comments section
+- 📱 Mobile view improvements
+- 🧪 Unit tests for core modules
+
+---
+
+## 👤 Author
+
+Developed with ❤️ by [Akhilan](https://github.com/Akhilan11)
+
+---
+
+```bash
+git clone https://github.com/Akhilan11/Inkspire
+cd Inkspire
+```
+Start blogging ✍️ and chatting 💬 now!
+
